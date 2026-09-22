@@ -24,7 +24,7 @@ interface Api{
     suspend fun getCosmetics(): CosmeticResponse
 
 
-    @GET("V1/map")
+    @GET("v1/map")
     suspend fun getMap(): MapResponse
 }
 
