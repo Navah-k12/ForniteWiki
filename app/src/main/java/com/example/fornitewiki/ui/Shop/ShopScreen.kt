@@ -391,7 +391,7 @@ fun ShopDetailContent(entry: ShopEntry, onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        // Botón Regresar (Mismo estilo que cosméticos)
+        // Botón Regresar
         Button(
             onClick = onBack,
             colors = ButtonDefaults.buttonColors(containerColor = FortniteCyan),
