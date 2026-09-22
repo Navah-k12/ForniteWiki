@@ -9,7 +9,8 @@ import com.example.fornitewiki.data.network.Api
 * Created by: navah
 * On: 20/9/26
 * All rights reserved: 2026
- */class NewsRepositoryImpl(
+ */
+class NewsRepositoryImpl(
      private val api: Api
  ) : NewsRepository{
     override suspend fun getNews(): List<NewsItem> {
