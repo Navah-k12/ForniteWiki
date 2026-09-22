@@ -1,21 +1,18 @@
 package com.example.fornitewiki.domain.repository
 
+import android.util.Log
 import com.example.fornitewiki.data.model.MapData
 import com.example.fornitewiki.data.model.PoiItem
 import com.example.fornitewiki.data.network.Api
 
-/**
- * Project: ForniteWiki
- * From: com.example.fornitewiki.domain.repository
- * Created by: navah
- * On: 21/9/26
- * All rights reserved: 2026
- */
-class MapRepositoryImpl (
+class MapRepositoryImpl(
     private val api: Api
-): MapRepository{
-    override suspend fun getMap(): MapData{
+) : MapRepository {
+    override suspend fun getMap(): MapData {
         val response = api.getMap()
-        return response.data
+        Log.d("MapRepository", "Respuesta completa de la API del mapa: $response")
+
+        // Si response.data es nulo, intentamos retornar un objeto seguro o mapearlo directamente
+        return response.data ?: throw IllegalStateException("La propiedad 'data' del mapa llegó nula desde la API")
     }
 }

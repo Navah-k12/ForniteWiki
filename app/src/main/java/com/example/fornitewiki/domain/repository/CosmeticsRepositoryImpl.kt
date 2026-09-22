@@ -15,6 +15,6 @@ class CosmeticsRepositoryImpl(
 ): CosmeticsRepository{
     override suspend fun getCosmetics(): List<CosmeticItem>{
         val response = api.getCosmetics()
-        return response.data
+        return response.data.br
     }
 }

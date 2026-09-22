@@ -22,17 +22,19 @@ data class ShopData(
     @SerializedName("entries") val entries: List<ShopEntry>?
 )
 
-
 data class ShopEntry(
+    @SerializedName("devName") val devName: String?,
     @SerializedName("regularPrice") val regularPrice: Int?,
     @SerializedName("finalPrice") val finalPrice: Int?,
     @SerializedName("isBundle") val isBundle: Boolean?,
     @SerializedName("isGiftable") val isGiftable: Boolean?,
     @SerializedName("banner") val banner: ShopBanner?,
     @SerializedName("bundle") val bundle: ShopBundle?,
-    @SerializedName("items") val items: List<CosmeticItem>?
+    @SerializedName("items") val items: List<CosmeticItem>?,
+    @SerializedName("brItems") val brItems: List<CosmeticItem>?,
+    @SerializedName("tracks") val tracks: List<ShopTrack>?,
+    @SerializedName("newDisplayAsset") val newDisplayAsset: NewDisplayAsset?
 )
-
 
 data class ShopBanner(
     @SerializedName("value") val value: String?,
@@ -40,12 +42,24 @@ data class ShopBanner(
     @SerializedName("backendValue") val backendValue: String?
 )
 
-
 data class ShopBundle(
     @SerializedName("name") val name: String?,
     @SerializedName("info") val info: String?,
     @SerializedName("image") val image: String?
 )
 
+data class ShopTrack(
+    @SerializedName("id") val id: String?,
+    @SerializedName("title") val title: String?,
+    @SerializedName("artist") val artist: String?,
+    @SerializedName("albumArt") val albumArt: String?
+)
 
+data class NewDisplayAsset(
+    @SerializedName("id") val id: String?,
+    @SerializedName("renderImages") val renderImages: List<RenderImage>?
+)
 
+data class RenderImage(
+    @SerializedName("image") val image: String?
+)
