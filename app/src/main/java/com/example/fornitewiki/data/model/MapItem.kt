@@ -15,7 +15,7 @@ data class MapResponse(
 )
 
 data class MapData(
-    @SerializedName("images") val images: String?,
+    @SerializedName("image") val images: String?,
     @SerializedName("pois") val pois: List<PoiItem>?
 )
 

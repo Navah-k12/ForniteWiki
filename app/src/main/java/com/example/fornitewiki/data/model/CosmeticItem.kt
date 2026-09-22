@@ -13,9 +13,12 @@ import com.google.gson.annotations.SerializedName
 
 data class CosmeticResponse(
     @SerializedName("status") val status: Int,
-    @SerializedName("data") val data: List<CosmeticItem>
+    @SerializedName("data") val data: CosmeticData
 )
 
+data class CosmeticData(
+    @SerializedName("br") val br: List<CosmeticItem>
+)
 
 data class CosmeticItem(
     @SerializedName("id") val id: String,
@@ -26,10 +29,10 @@ data class CosmeticItem(
     @SerializedName("series") val series: Series?,
     @SerializedName("set") val set: CosmeticsSet?,
     @SerializedName("introduction") val introduction: Introduction?,
-    @SerializedName("image") val image: CosmeticsImage?,
+    @SerializedName("images") val images: CosmeticsImage?,
     @SerializedName("variants") val variants: List<Variants>?,
     @SerializedName("searchTags") val search: List<String>?,
-    @SerializedName("metaTag") val metaTag: List<String>?
+    @SerializedName("metaTags") val metaTags: List<String>?
 )
 
 data class CosmeticsType(
@@ -58,12 +61,13 @@ data class CosmeticsSet(
 
 data class Introduction(
     @SerializedName("chapter") val chapter: String,
+    @SerializedName("season") val season: String,
     @SerializedName("text") val text: String,
     @SerializedName("backendValue") val backendValue: String
 )
 
 data class CosmeticsImage(
-    @SerializedName("smallIcon") val smalIcon: String,
+    @SerializedName("smallIcon") val smallIcon: String,
     @SerializedName("icon") val icon: String,
     @SerializedName("featured") val featured: String
 )
