@@ -1,9 +1,10 @@
 package com.example.fornitewiki.ui.cosmetics
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -11,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -20,7 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.fornitewiki.data.model.CosmeticItem
+import com.example.fornitewiki.ui.components.FortniteRarityBadge
+import com.example.fornitewiki.ui.components.fortniteClickable
 import com.example.fornitewiki.ui.theme.FortniteCardBg
+import com.example.fornitewiki.ui.theme.FortniteDarkBg
+import com.example.fornitewiki.ui.theme.getRarityBrush
 import com.example.fornitewiki.ui.theme.getRarityColor
 
 @Composable
@@ -29,61 +36,118 @@ fun CosmeticItemCard(
     onClick: () -> Unit
 ) {
     val rarityColor = getRarityColor(item.rarity?.value)
+    val rarityText = item.rarity?.displayValue ?: item.rarity?.value ?: "Común"
 
     Card(
         modifier = Modifier
-            .width(160.dp)
-            .height(220.dp)
-            .padding(8.dp)
-            .border(2.dp, rarityColor, RoundedCornerShape(16.dp))
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
+            .fillMaxWidth()
+            .height(235.dp)
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(18.dp),
+                ambientColor = rarityColor.copy(alpha = 0.4f),
+                spotColor = rarityColor.copy(alpha = 0.8f)
+            )
+            .clip(RoundedCornerShape(18.dp))
+            .border(
+                border = BorderStroke(
+                    width = 1.5.dp,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            rarityColor,
+                            rarityColor.copy(alpha = 0.5f),
+                            Color.White.copy(alpha = 0.08f)
+                        )
+                    )
+                ),
+                shape = RoundedCornerShape(18.dp)
+            )
+            .fortniteClickable(
+                scaleDown = 0.92f,
+                onClick = onClick
+            ),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = FortniteCardBg)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Fondo con degradado reactivo al color de la rareza (Estilo Taquilla de Fortnite)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(getRarityBrush(rarityColor))
+            )
+
+            // Resplandor de fondo adicional
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp)
+                    .height(130.dp)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(rarityColor.copy(alpha = 0.35f), Color.Transparent),
+                            radius = 260f
+                        )
+                    )
+            )
+
+            // Contenido del Cosmético (Icono 3D)
+            AsyncImage(
+                model = item.images?.icon ?: item.images?.smallIcon,
+                contentDescription = item.name,
+                modifier = Modifier
+                    .size(130.dp)
+                    .align(Alignment.Center)
+                    .padding(bottom = 35.dp),
+                contentScale = ContentScale.Fit
+            )
+
+            // Chip superior de Rareza angular
+            FortniteRarityBadge(
+                rarityText = rarityText,
+                rarityColor = rarityColor,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            )
+
+            // Degradado inferior para legibilidad del texto
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(85.dp)
+                    .align(Alignment.BottomCenter)
                     .background(
                         Brush.verticalGradient(
-                            colors = listOf(rarityColor.copy(alpha = 0.3f), Color.Transparent)
+                            colors = listOf(Color.Transparent, FortniteDarkBg.copy(alpha = 0.95f))
                         )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = item.images?.icon ?: item.images?.smallIcon,
-                    contentDescription = item.name,
-                    modifier = Modifier.size(110.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
+                    )
+            )
 
+            // Nombre y Tipo del Ítem
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.Start
+                    .align(Alignment.BottomStart)
+                    .padding(horizontal = 12.dp, vertical = 10.dp)
             ) {
                 Text(
-                    text = item.name,
+                    text = item.name ?: "Cosmético",
                     color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 13.sp,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    letterSpacing = 0.3.sp
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
-                    text = item.type?.displayValue ?: "Cosmético",
-                    color = Color.LightGray,
-                    fontSize = 12.sp,
+                    text = (item.type?.displayValue ?: "OBJETO").uppercase(),
+                    color = rarityColor.copy(alpha = 0.9f),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.8.sp,
                     maxLines = 1
                 )
             }

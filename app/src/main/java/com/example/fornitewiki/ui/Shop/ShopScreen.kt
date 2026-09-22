@@ -3,13 +3,15 @@ package com.example.fornitewiki.ui.shop
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,11 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.fornitewiki.data.model.ShopEntry
-
-private val FortniteDarkBg = Color(0xFF0B0E14)
-private val FortniteCardBg = Color(0xFF151924)
-private val FortniteCyan = Color(0xFF00F0FF)
-private val FortniteYellow = Color(0xFFFFD700)
+import com.example.fornitewiki.ui.components.FortniteHUDHeader
+import com.example.fornitewiki.ui.components.FortniteRarityBadge
+import com.example.fornitewiki.ui.components.fortniteClickable
+import com.example.fornitewiki.ui.theme.*
 
 @Composable
 fun ShopScreen(viewModel: ShopViewModel) {
@@ -43,128 +44,100 @@ fun ShopScreen(viewModel: ShopViewModel) {
             .background(FortniteDarkBg)
     ) {
         if (selectedEntry != null) {
-            // --- DETALLE DEL OBJETO SELECCIONADO ---
             ShopDetailContent(
                 entry = selectedEntry!!,
                 onBack = { selectedEntry = null }
             )
         } else {
-            // --- LISTA GENERAL DE LA TIENDA ---
             Column(modifier = Modifier.fillMaxSize()) {
-                // HUD Header
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                        .shadow(12.dp, RoundedCornerShape(20.dp))
-                        .clip(RoundedCornerShape(20.dp))
-                        .border(1.dp, Color.White.copy(alpha = 0.12f), RoundedCornerShape(20.dp)),
-                    color = FortniteCardBg
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .clip(CircleShape)
-                                        .background(FortniteYellow)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "TIENDA DE OBJETOS",
-                                    color = FortniteYellow,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Black,
-                                    letterSpacing = 1.2.sp
-                                )
-                            }
-                            Text(
-                                text = "Diaria y Destacados",
-                                color = Color.White,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                        }
+                // Encabezado HUD oficial de la Tienda
+                FortniteHUDHeader(
+                    tag = "TIENDA DE OBJETOS",
+                    title = "Rotación Diaria",
+                    subtitle = "Objetos, lotes y cosméticos destacados",
+                    rightBadge = "🪙 V-BUCKS",
+                    badgeColor = FortniteYellow
+                )
 
-                        Surface(
-                            color = FortniteYellow.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(12.dp),
-                            border = BorderStroke(1.dp, FortniteYellow.copy(alpha = 0.4f))
-                        ) {
-                            Text(
-                                text = "🪙 V-BUCKS",
-                                color = FortniteYellow,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                            )
-                        }
-                    }
-                }
-
-                // Grid
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 14.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     when {
                         state.isLoading -> {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                CircularProgressIndicator(color = FortniteCyan, strokeWidth = 3.dp)
-                                Spacer(modifier = Modifier.height(12.dp))
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = FortniteYellow,
+                                    strokeWidth = 3.dp
+                                )
+                                Spacer(modifier = Modifier.height(14.dp))
                                 Text(
-                                    text = "CARGANDO TIENDA...",
+                                    text = "ACTUALIZANDO TIENDA...",
                                     color = Color.White,
                                     fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 1.2.sp
                                 )
                             }
                         }
                         state.errorMessage != null -> {
                             Surface(
                                 color = FortniteCardBg,
-                                shape = RoundedCornerShape(16.dp),
+                                shape = RoundedCornerShape(18.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .border(1.dp, Color.Red.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+                                    .border(1.dp, Color.Red.copy(alpha = 0.5f), RoundedCornerShape(18.dp))
                             ) {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.padding(20.dp)
+                                    modifier = Modifier.padding(24.dp)
                                 ) {
-                                    Text(text = "⚠️ Error al cargar la tienda", color = Color.Red, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        text = "⚠️ ERROR EN LA TIENDA",
+                                        color = Color.Red,
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 15.sp
+                                    )
                                     Spacer(modifier = Modifier.height(6.dp))
-                                    Text(text = state.errorMessage ?: "", color = Color.LightGray, fontSize = 12.sp)
+                                    Text(
+                                        text = state.errorMessage,
+                                        color = Color.LightGray,
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center
+                                    )
                                     Spacer(modifier = Modifier.height(16.dp))
-                                    Button(
-                                        onClick = { viewModel.fetchShopData() },
-                                        colors = ButtonDefaults.buttonColors(containerColor = FortniteCyan)
+                                    Surface(
+                                        color = FortniteCyan,
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier
+                                            .fortniteClickable { viewModel.fetchShopData() }
+                                            .padding(horizontal = 16.dp, vertical = 8.dp)
                                     ) {
-                                        Text("Reintentar", color = Color.Black, fontWeight = FontWeight.Bold)
+                                        Text(
+                                            "REINTENTAR",
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.Black,
+                                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                                        )
                                     }
                                 }
                             }
                         }
                         state.shopEntries.isEmpty() -> {
-                            Text(text = "No hay objetos disponibles.", color = Color.Gray, fontSize = 14.sp)
+                            Text(text = "No hay objetos disponibles en este momento.", color = Color.Gray, fontSize = 14.sp)
                         }
                         else -> {
                             LazyVerticalGrid(
                                 columns = GridCells.Fixed(2),
                                 modifier = Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                                contentPadding = PaddingValues(bottom = 110.dp)
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp),
+                                contentPadding = PaddingValues(top = 4.dp, bottom = 110.dp)
                             ) {
                                 items(state.shopEntries) { entry ->
                                     ShopEntryCard(
@@ -186,33 +159,63 @@ fun ShopEntryCard(entry: ShopEntry, onClick: () -> Unit) {
     val itemName = getEntryName(entry)
     val imageUrl = getEntryImage(entry)
     val rarityText = getEntryRarity(entry)
+    val rarityColor = getRarityColor(rarityText)
     val price = entry.finalPrice ?: entry.regularPrice ?: 0
 
-    Surface(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(230.dp)
-            .shadow(8.dp, RoundedCornerShape(18.dp))
+            .height(245.dp)
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(18.dp),
+                ambientColor = rarityColor.copy(alpha = 0.35f),
+                spotColor = rarityColor.copy(alpha = 0.7f)
+            )
             .clip(RoundedCornerShape(18.dp))
-            .border(1.dp, Color.White.copy(alpha = 0.12f), RoundedCornerShape(18.dp))
-            .clickable { onClick() },
-        color = FortniteCardBg
+            .border(
+                border = BorderStroke(
+                    width = 1.5.dp,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            rarityColor,
+                            rarityColor.copy(alpha = 0.4f),
+                            Color.White.copy(alpha = 0.08f)
+                        )
+                    )
+                ),
+                shape = RoundedCornerShape(18.dp)
+            )
+            // Animación táctil elástica
+            .fortniteClickable(
+                scaleDown = 0.92f,
+                onClick = onClick
+            ),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = FortniteCardBg)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // Fondo degradado por rareza
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(getRarityBrush(rarityColor))
+            )
+
+            // Resplandor central
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(130.dp)
                     .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0.04f),
-                                Color.Transparent,
-                                FortniteDarkBg.copy(alpha = 0.95f)
-                            )
+                        Brush.radialGradient(
+                            colors = listOf(rarityColor.copy(alpha = 0.3f), Color.Transparent),
+                            radius = 240f
                         )
                     )
             )
 
+            // Imagen del objeto
             if (imageUrl.isNotBlank()) {
                 AsyncImage(
                     model = imageUrl,
@@ -220,42 +223,53 @@ fun ShopEntryCard(entry: ShopEntry, onClick: () -> Unit) {
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 12.dp, start = 12.dp, end = 12.dp, bottom = 55.dp)
+                        .padding(top = 10.dp, start = 12.dp, end = 12.dp, bottom = 65.dp)
                 )
             } else {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = 55.dp),
+                        .padding(bottom = 65.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "🎯", fontSize = 36.sp)
+                    Text(text = "🎯", fontSize = 38.sp)
                 }
             }
 
+            // Chip superior de Rareza angular
+            FortniteRarityBadge(
+                rarityText = rarityText,
+                rarityColor = rarityColor,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            )
+
+            // Degradado inferior para el texto
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp)
+                    .height(95.dp)
                     .align(Alignment.BottomCenter)
                     .background(
                         Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, FortniteDarkBg)
+                            colors = listOf(Color.Transparent, FortniteDarkBg.copy(alpha = 0.98f))
                         )
                     )
             )
 
+            // Información inferior: Nombre y V-Bucks
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(horizontal = 12.dp, vertical = 10.dp)
+                    .padding(horizontal = 10.dp, vertical = 10.dp)
             ) {
                 Text(
                     text = itemName,
                     color = Color.White,
                     fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Black,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -269,19 +283,20 @@ fun ShopEntryCard(entry: ShopEntry, onClick: () -> Unit) {
                 ) {
                     Text(
                         text = rarityText.uppercase(),
-                        color = FortniteCyan,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
+                        color = rarityColor,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 0.5.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
                     )
 
+                    // Badge de V-Bucks
                     Surface(
-                        color = FortniteYellow.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(8.dp),
-                        border = BorderStroke(0.5.dp, FortniteYellow.copy(alpha = 0.35f))
+                        color = FortniteYellow.copy(alpha = 0.18f),
+                        shape = CutCornerShape(topStart = 6.dp, bottomEnd = 6.dp),
+                        border = BorderStroke(1.dp, FortniteYellow.copy(alpha = 0.6f))
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -306,34 +321,60 @@ fun ShopDetailContent(entry: ShopEntry, onBack: () -> Unit) {
     val itemName = getEntryName(entry)
     val imageUrl = getEntryImage(entry)
     val rarityText = getEntryRarity(entry)
+    val rarityColor = getRarityColor(rarityText)
     val description = entry.brItems?.firstOrNull()?.description
         ?: entry.items?.firstOrNull()?.description
         ?: entry.bundle?.info
-        ?: "Disponible en la Tienda de Objetos."
+        ?: "Disponible en la Tienda de Objetos de la isla."
     val price = entry.finalPrice ?: entry.regularPrice ?: 0
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .statusBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .verticalScroll(scrollState)
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Marco de la imagen en grande
+        // Marco de héroe 3D grande
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
-                .shadow(16.dp, RoundedCornerShape(24.dp))
-                .clip(RoundedCornerShape(24.dp))
-                .border(2.dp, FortniteCyan, RoundedCornerShape(24.dp)),
+                .height(310.dp)
+                .shadow(
+                    elevation = 20.dp,
+                    shape = RoundedCornerShape(26.dp),
+                    ambientColor = rarityColor.copy(alpha = 0.4f),
+                    spotColor = rarityColor
+                )
+                .clip(RoundedCornerShape(26.dp))
+                .border(
+                    2.dp,
+                    Brush.verticalGradient(
+                        listOf(rarityColor, rarityColor.copy(alpha = 0.3f), Color.White.copy(alpha = 0.1f))
+                    ),
+                    RoundedCornerShape(26.dp)
+                ),
             color = FortniteCardBg
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
+                // Resplandor radiante
+                Box(
+                    modifier = Modifier
+                        .size(240.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(rarityColor.copy(alpha = 0.4f), Color.Transparent),
+                                radius = 320f
+                            )
+                        )
+                )
+
                 if (imageUrl.isNotBlank()) {
                     AsyncImage(
                         model = imageUrl,
@@ -341,72 +382,120 @@ fun ShopDetailContent(entry: ShopEntry, onBack: () -> Unit) {
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(20.dp)
+                            .padding(22.dp)
                     )
                 } else {
                     Text(text = "🎯", fontSize = 64.sp)
                 }
+
+                FortniteRarityBadge(
+                    rarityText = rarityText,
+                    rarityColor = rarityColor,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(14.dp)
+                )
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Título del Objeto
         Text(
-            text = itemName,
+            text = itemName.uppercase(),
             color = Color.White,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Black,
+            letterSpacing = 0.8.sp,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
         // Rareza y Precio
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
             Text(
                 text = rarityText.uppercase(),
-                color = FortniteCyan,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold
+                color = rarityColor,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Black,
+                letterSpacing = 1.sp
             )
-            Text(
-                text = " • 🪙 $price V-BUCKS",
-                color = FortniteYellow,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Black
-            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Surface(
+                color = FortniteYellow.copy(alpha = 0.2f),
+                shape = CutCornerShape(topStart = 6.dp, bottomEnd = 6.dp),
+                border = BorderStroke(1.dp, FortniteYellow.copy(alpha = 0.7f))
+            ) {
+                Text(
+                    text = "🪙 $price V-BUCKS",
+                    color = FortniteYellow,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Black,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Descripción
-        Text(
-            text = description,
-            color = Color.LightGray,
-            fontSize = 14.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        // Botón Regresar (Mismo estilo que cosméticos)
-        Button(
-            onClick = onBack,
-            colors = ButtonDefaults.buttonColors(containerColor = FortniteCyan),
-            shape = RoundedCornerShape(12.dp),
+        Surface(
             modifier = Modifier
-                .width(160.dp)
-                .height(44.dp)
+                .fillMaxWidth()
+                .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(16.dp)),
+            color = FortniteCardBg.copy(alpha = 0.7f),
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Text(
-                text = "Regresar",
-                color = Color.Black,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
-            )
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "DETALLES",
+                    color = FortniteCyan,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.2.sp
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = description,
+                    color = Color.LightGray,
+                    fontSize = 13.sp,
+                    lineHeight = 18.sp
+                )
+            }
         }
+
+        Spacer(modifier = Modifier.height(26.dp))
+
+        // Botón Regresar con animación táctil
+        Surface(
+            modifier = Modifier
+                .width(200.dp)
+                .height(48.dp)
+                .shadow(12.dp, RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(14.dp))
+                .border(1.dp, FortniteYellow.copy(alpha = 0.8f), RoundedCornerShape(14.dp))
+                .fortniteClickable(scaleDown = 0.90f, onClick = onBack),
+            color = FortniteYellow
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "◀ REGRESAR",
+                    color = Color.Black,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 14.sp,
+                    letterSpacing = 1.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(30.dp))
     }
 }
 
