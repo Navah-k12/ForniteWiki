@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
         val mapUseCase = GetMapUseCase(mapRepository)
         val mapViewModel = MapViewModel(mapUseCase)
 
-        // Inicialización de Tienda (Añadido)
+        // Inicialización de Tienda
         val shopRepository = ShopRepositoryImpl(apiService)
         val shopViewModel = ShopViewModel(shopRepository)
 
@@ -179,7 +179,7 @@ class MainActivity : ComponentActivity() {
                                     HomeScreen()
                                 }
                                 is Screen.Shop -> {
-                                    // Pantalla de la tienda conectada (Añadido)
+                                    // Pantalla de la tienda conectada
                                     ShopScreen(viewModel = shopViewModel)
                                 }
                             }
