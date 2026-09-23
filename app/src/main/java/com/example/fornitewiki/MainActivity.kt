@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.fornitewiki.data.model.CosmeticItem
 import com.example.fornitewiki.data.network.RetrofitClient
 import com.example.fornitewiki.domain.repository.CosmeticsRepositoryImpl
@@ -52,7 +53,7 @@ class MainActivity : ComponentActivity() {
         val mapUseCase = GetMapUseCase(mapRepository)
         val mapViewModel = MapViewModel(mapUseCase)
 
-        // Inicialización de Tienda (Añadido)
+        // Inicialización de Tienda
         val shopRepository = ShopRepositoryImpl(apiService)
         val shopViewModel = ShopViewModel(shopRepository)
 
@@ -66,74 +67,83 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    containerColor = FortniteSurface,
+                    containerColor = com.example.fornitewiki.ui.theme.FortniteDarkBg,
                     bottomBar = {
                         if (selectedCosmetic == null) {
                             Surface(
                                 modifier = Modifier
-                                    .padding(start = 20.dp, end = 20.dp, bottom = 36.dp)
+                                    .padding(start = 16.dp, end = 16.dp, bottom = 28.dp)
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(28.dp))
-                                    .border(1.dp, Color.Cyan.copy(alpha = 0.35f), RoundedCornerShape(28.dp)),
-                                color = FortniteSurface.copy(alpha = 0.95f),
-                                tonalElevation = 10.dp,
-                                shadowElevation = 10.dp
+                                    .clip(RoundedCornerShape(26.dp))
+                                    .border(
+                                        1.5.dp,
+                                        androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                            listOf(
+                                                com.example.fornitewiki.ui.theme.FortniteCyan.copy(alpha = 0.6f),
+                                                com.example.fornitewiki.ui.theme.FortniteYellow.copy(alpha = 0.4f),
+                                                com.example.fornitewiki.ui.theme.FortniteCyan.copy(alpha = 0.6f)
+                                            )
+                                        ),
+                                        RoundedCornerShape(26.dp)
+                                    ),
+                                color = com.example.fornitewiki.ui.theme.FortniteCardBg.copy(alpha = 0.96f),
+                                tonalElevation = 12.dp,
+                                shadowElevation = 16.dp
                             ) {
                                 NavigationBar(
-                                    containerColor = Color(0xFF161A25),
+                                    containerColor = com.example.fornitewiki.ui.theme.FortniteCardBg,
                                     contentColor = Color.White
                                 ) {
                                     NavigationBarItem(
                                         selected = currentScreen == Screen.Cosmetics,
                                         onClick = { currentScreen = Screen.Cosmetics },
-                                        icon = { Text("👕") },
-                                        label = { Text("Cosméticos", fontWeight = FontWeight.Bold) },
+                                        icon = { Text("👕", fontSize = 18.sp) },
+                                        label = { Text("TAQUILLA", fontWeight = FontWeight.Black, fontSize = 10.sp, letterSpacing = 0.5.sp) },
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = Color.Cyan,
+                                            selectedIconColor = com.example.fornitewiki.ui.theme.FortniteCyan,
                                             unselectedIconColor = Color.Gray,
-                                            selectedTextColor = Color.Cyan,
+                                            selectedTextColor = com.example.fornitewiki.ui.theme.FortniteCyan,
                                             unselectedTextColor = Color.Gray,
-                                            indicatorColor = Color.Cyan.copy(alpha = 0.15f)
+                                            indicatorColor = com.example.fornitewiki.ui.theme.FortniteCyan.copy(alpha = 0.18f)
                                         )
                                     )
                                     NavigationBarItem(
                                         selected = currentScreen == Screen.Map,
                                         onClick = { currentScreen = Screen.Map },
-                                        icon = { Text("🗺️") },
-                                        label = { Text("Mapa", fontWeight = FontWeight.Bold) },
+                                        icon = { Text("🗺️", fontSize = 18.sp) },
+                                        label = { Text("MAPA", fontWeight = FontWeight.Black, fontSize = 10.sp, letterSpacing = 0.5.sp) },
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = Color.Cyan,
+                                            selectedIconColor = com.example.fornitewiki.ui.theme.FortniteCyan,
                                             unselectedIconColor = Color.Gray,
-                                            selectedTextColor = Color.Cyan,
+                                            selectedTextColor = com.example.fornitewiki.ui.theme.FortniteCyan,
                                             unselectedTextColor = Color.Gray,
-                                            indicatorColor = Color.Cyan.copy(alpha = 0.15f)
+                                            indicatorColor = com.example.fornitewiki.ui.theme.FortniteCyan.copy(alpha = 0.18f)
                                         )
                                     )
                                     NavigationBarItem(
                                         selected = currentScreen == Screen.Home,
                                         onClick = { currentScreen = Screen.Home },
-                                        icon = { Text("📰") },
-                                        label = { Text("Noticias", fontWeight = FontWeight.Bold) },
+                                        icon = { Text("📰", fontSize = 18.sp) },
+                                        label = { Text("NOTICIAS", fontWeight = FontWeight.Black, fontSize = 10.sp, letterSpacing = 0.5.sp) },
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = Color.Cyan,
+                                            selectedIconColor = com.example.fornitewiki.ui.theme.FortniteCyan,
                                             unselectedIconColor = Color.Gray,
-                                            selectedTextColor = Color.Cyan,
+                                            selectedTextColor = com.example.fornitewiki.ui.theme.FortniteCyan,
                                             unselectedTextColor = Color.Gray,
-                                            indicatorColor = Color.Cyan.copy(alpha = 0.15f)
+                                            indicatorColor = com.example.fornitewiki.ui.theme.FortniteCyan.copy(alpha = 0.18f)
                                         )
                                     )
-                                    // Botón de Tienda en la barra inferior (Añadido)
                                     NavigationBarItem(
                                         selected = currentScreen == Screen.Shop,
                                         onClick = { currentScreen = Screen.Shop },
-                                        icon = { Text("🛒") },
-                                        label = { Text("Tienda", fontWeight = FontWeight.Bold) },
+                                        icon = { Text("🪙", fontSize = 18.sp) },
+                                        label = { Text("TIENDA", fontWeight = FontWeight.Black, fontSize = 10.sp, letterSpacing = 0.5.sp) },
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = Color.Cyan,
+                                            selectedIconColor = com.example.fornitewiki.ui.theme.FortniteYellow,
                                             unselectedIconColor = Color.Gray,
-                                            selectedTextColor = Color.Cyan,
+                                            selectedTextColor = com.example.fornitewiki.ui.theme.FortniteYellow,
                                             unselectedTextColor = Color.Gray,
-                                            indicatorColor = Color.Cyan.copy(alpha = 0.15f)
+                                            indicatorColor = com.example.fornitewiki.ui.theme.FortniteYellow.copy(alpha = 0.18f)
                                         )
                                     )
                                 }
@@ -169,7 +179,7 @@ class MainActivity : ComponentActivity() {
                                     HomeScreen()
                                 }
                                 is Screen.Shop -> {
-                                    // Pantalla de la tienda conectada (Añadido)
+                                    // Pantalla de la tienda conectada
                                     ShopScreen(viewModel = shopViewModel)
                                 }
                             }
